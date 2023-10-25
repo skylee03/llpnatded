@@ -1,0 +1,56 @@
+%%% % -*- coding: utf-8 -*-
+%%% ----------------------------------------------------------------------------
+%%% llpnatded.sty
+%%% Typeset LLP-style natural deduction with LaTeX3
+%%%
+%%% Copyright : 2023 (c) Yang Ming-Tian <i@skylee.xyz>
+%%% Repository: https://github.com/skylee03/llpnatded
+%%% License   : The LaTeX Project Public License 1.3c
+%%% ----------------------------------------------------------------------------
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{llpnatded}[2023/10/25 LLP Natural Deduction]
+
+\RequirePackage{expl3}
+\RequirePackage{xparse}
+
+\makeatletter
+
+\newlength{\textsize}
+\setlength{\textsize}{\f@size pt}
+
+\makeatother
+
+\ExplSyntaxOn
+
+\int_new:N \g_depth_int
+\int_new:N \g_maxdepth_int
+\tl_new:N \l_row_tl
+
+\NewExpandableDocumentCommand \ndopen {} {
+    \cline{ \int_eval:n { \g_depth_int + 1 } - \int_eval:n { \g_depth_int + 1 } }
+    \int_gset:Nn \g_depth_int { \g_depth_int + 1 }
+}
+
+\NewExpandableDocumentCommand \ndclose {} {
+    \cline{ \g_depth_int - \int_eval:n { \g_maxdepth_int + 3 }}
+    \int_gset:Nn \g_depth_int { \g_depth_int - 1 }
+}
+
+\NewExpandableDocumentCommand \ndstep { m m m } {
+    \prg_replicate:nn { \g_depth_int } { \tl_put_right:Nn \l_row_tl { { \vrule height \textsize } & } }
+    \prg_replicate:nn { \g_maxdepth_int - \g_depth_int }{ \tl_put_right:Nn \l_row_tl { & } }
+    \tl_put_right:Nn \l_row_tl { #1. & #2 & #3 \\ }
+    \l_row_tl
+}
+
+\NewDocumentEnvironment { nd } { m } {
+    \int_gset:Nn \g_maxdepth_int #1
+    \begin{displaymath}\begin{array}{ \prg_replicate:nn { \g_maxdepth_int } { @{}p{.6em}@{} } rcl }
+}{
+    \end{array}\end{displaymath}
+}
+
+\ExplSyntaxOff
+
+\endinput
