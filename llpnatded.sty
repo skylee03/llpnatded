@@ -40,7 +40,7 @@
 \NewExpandableDocumentCommand \ndstep { m m m } {
     \prg_replicate:nn { \g_depth_int } { \tl_put_right:Nn \l_row_tl { { \vrule height \textsize } & } }
     \prg_replicate:nn { \g_maxdepth_int - \g_depth_int }{ \tl_put_right:Nn \l_row_tl { & } }
-    \tl_put_right:Nn \l_row_tl { #1. & #2 & #3 \\ }
+    \tl_put_right:Nn \l_row_tl { #1 \tl_if_empty:nTF {#1} {} { . } & #2 & #3 \\ }
     \l_row_tl
 }
 
